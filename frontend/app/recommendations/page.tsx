@@ -120,13 +120,12 @@ export default function RecommendationsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {recommendations.map((device, index) => (
               <div 
                 key={device.id || index} 
-                className={`group relative flex flex-col rounded-3xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 ${
-                  index === 0 ? "border-primary bg-surface shadow-xl" : "border-outline/10 bg-surface/50"
-                }`}
+                className={`group relative flex flex-col rounded-3xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 border-primary bg-surface shadow-xl
+                `}
               >
                 {(device.tag || index === 0) && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg z-10 flex items-center gap-2">

@@ -25,10 +25,10 @@ const CATEGORIES = [
 ];
 
 const BRANDS = {
-  phone: ["Samsung", "Apple", "Vivo", "Oppo", "Xiaomi", "OnePlus", "Google", "Realme"],
-  laptop: ["Dell", "HP", "Apple", "Lenovo", "Asus", "Acer", "MSI"],
-  tab: ["Apple", "Samsung", "Lenovo", "Xiaomi"],
-  computer: ["Apple", "Dell", "HP", "Lenovo", "Custom Build"]
+  phone: ["Samsung", "Apple", "Vivo", "Iqoo", "Oppo", "Xiaomi", "OnePlus", "Google", "Realme", "Nothing", "Motorola", "Asus", "Infinix", "Tecno", "Lava"],
+  laptop: ["Dell", "HP", "Apple", "Lenovo", "Asus", "Acer", "MSI", "Razer", "Microsoft", "Samsung"],
+  tab: ["Apple", "Samsung", "Lenovo", "Xiaomi", "Microsoft", "Huawei"],
+  computer: ["Apple", "Dell", "HP", "Lenovo", "Custom Build", "Asus", "Acer", "MSI", "Razer", "Microsoft", "Samsung"]
 };
 
 const BUDGETS = [
@@ -54,26 +54,95 @@ const USER_TYPES = [
   "Others"
 ];
 
-const TECH_QUESTIONS = [
-  {
-    id: "ois",
-    question: "Do you need OIS in your camera?",
-    explanation: "OIS means Optical Image Stabilization. It keeps your camera video and photos stable and less shaky.",
-    options: ["Yes", "No", "Not sure"]
-  },
-  {
-    id: "display",
-    question: "Which display type do you prefer?",
-    explanation: "AMOLED/OLED displays have better colors and deep blacks compared to LCD/IPS.",
-    options: ["AMOLED/OLED", "LCD/IPS", "Don't care"]
-  },
-  {
-    id: "battery",
-    question: "How important is battery life?",
-    explanation: "Higher mAh and better optimization means the device lasts longer on a single charge.",
-    options: ["Extremely important", "Normal", "I have a charger nearby"]
-  }
-];
+interface TechQuestion {
+  id: string;
+  question: string;
+  explanation: string;
+  options: string[];
+}
+
+const TECH_QUESTIONS: Record<string, TechQuestion[]> = {
+  phone: [
+    {
+      id: "ois",
+      question: "Do you need OIS in your camera?",
+      explanation: "OIS means Optical Image Stabilization. It keeps your camera video and photos stable and less shaky.",
+      options: ["Yes", "No", "Not sure"]
+    },
+    {
+      id: "display",
+      question: "Which display type do you prefer?",
+      explanation: "AMOLED/OLED displays have better colors and deep blacks compared to LCD/IPS.",
+      options: ["AMOLED/OLED", "LCD/IPS", "Don't care"]
+    },
+    {
+      id: "charging",
+      question: "Do you need super-fast charging?",
+      explanation: "Fast charging (e.g., 65W+) lets you charge your phone fully in under 40 minutes.",
+      options: ["Yes, very fast", "Normal is fine", "Not a priority"]
+    }
+  ],
+  laptop: [
+    {
+      id: "portability",
+      question: "How important is weight?",
+      explanation: "Thin & Light laptops are easy to carry but might have fewer ports. Performance laptops are heavier.",
+      options: ["Must be very light", "Normal weight", "Doesn't matter"]
+    },
+    {
+      id: "battery_life",
+      question: "Do you need all-day battery?",
+      explanation: "If you travel or work in cafes, you might need 10+ hours of real-world battery life.",
+      options: ["Yes, 10+ hours", "6-8 hours is fine", "I'll mostly be plugged in"]
+    },
+    {
+      id: "screen_quality",
+      question: "Is color accuracy important?",
+      explanation: "Critical for photo/video editors. High color accuracy (100% sRGB) shows colors as they truly are.",
+      options: ["Yes, I'm a creator", "Good for movies", "Normal is fine"]
+    }
+  ],
+  computer: [
+    {
+      id: "form_factor",
+      question: "What size do you prefer?",
+      explanation: "Tower PCs are easy to upgrade. Mini PCs save space but are harder to change later.",
+      options: ["Large Tower", "Mini/Compact PC", "All-in-One (Built into monitor)"]
+    },
+    {
+      id: "graphics",
+      question: "Do you need a dedicated Graphics Card (GPU)?",
+      explanation: "Essential for 3D gaming and video editing. Not needed for basic office work.",
+      options: ["Yes, for heavy gaming", "Yes, for editing", "No, basic usage"]
+    },
+    {
+      id: "storage",
+      question: "How much storage do you need?",
+      explanation: "SSD is for speed (Windows/Apps), HDD is for bulk files (Movies/Photos).",
+      options: ["Fast SSD only", "Mixed (Fast + Bulk)", "Don't know"]
+    }
+  ],
+  tab: [
+    {
+      id: "refresh_rate",
+      question: "Do you want a smooth 120Hz display?",
+      explanation: "Makes scrolling and using a stylus feel much smoother and more natural.",
+      options: ["Yes, must have", "60Hz is fine", "Not sure"]
+    },
+    {
+      id: "stylus",
+      question: "Will you use a Stylus (Pen)?",
+      explanation: "Great for note-taking, drawing, and precise editing.",
+      options: ["Yes, daily", "Maybe occasionally", "No"]
+    },
+    {
+      id: "cellular",
+      question: "Do you need 5G/LTE connectivity?",
+      explanation: "Allows you to use internet without Wi-Fi, using a SIM card.",
+      options: ["Yes, for travel", "Wi-Fi only is fine"]
+    }
+  ]
+};
 
 interface QuizAnswers {
   category: string;
@@ -242,6 +311,7 @@ export default function QuizPage() {
           </div>
         );
       case 5: // Technical
+        const categoryQuestions = TECH_QUESTIONS[answers.category] || [];
         return (
           <div className="space-y-10">
             <div className="text-center">
@@ -249,7 +319,7 @@ export default function QuizPage() {
               <p className="text-text-muted mt-2">Don&apos;t worry, DeviceDada will explain everything!</p>
             </div>
             <div className="space-y-8">
-              {TECH_QUESTIONS.map((q) => (
+              {categoryQuestions.map((q) => (
                 <div key={q.id} className="space-y-4">
                   <div className="flex items-start gap-3">
                     <h4 className="font-bold text-lg leading-tight">{q.question}</h4>
@@ -261,7 +331,7 @@ export default function QuizPage() {
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {q.options.map((opt) => (
+                    {q.options.map((opt: string) => (
                       <button
                         key={opt}
                         onClick={() => setAnswers({ ...answers, tech: { ...answers.tech, [q.id]: opt } })}

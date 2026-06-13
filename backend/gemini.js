@@ -2,7 +2,7 @@
 // The API key is read from the GEMINI_API_KEY environment variable and never
 // leaves the server. Do NOT hardcode the key here or expose it to the client.
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 function buildPrompt(answers) {
