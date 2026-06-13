@@ -1,37 +1,17 @@
 import Link from "next/link";
 import { Laptop, Smartphone, Monitor, Tablet, ChevronRight, Search, Split } from "lucide-react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background font-body text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-outline/10 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
-              <Search className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-display font-bold tracking-tight text-primary">DeviceDada</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="#categories" className="transition-colors hover:text-primary">Categories</Link>
-            <Link href="/quiz" className="transition-colors hover:text-primary">Quiz</Link>
-            <Link href="/compare" className="transition-colors hover:text-primary">Compare</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/quiz" 
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-            >
-              Start Quiz
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden py-24 lg:py-32">
+        <section className="relative overflow-hidden py-24">
           <div className="container mx-auto px-4 md:px-6 relative z-10">
             <div className="flex flex-col items-center text-center space-y-8">
               <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-4">
@@ -144,9 +124,7 @@ export default function Home() {
                 <div className="aspect-square rounded-3xl bg-primary-container/20 flex items-center justify-center border border-primary/10 overflow-hidden shadow-2xl">
                   {/* Mock Guru Character Placeholder */}
                   <div className="flex flex-col items-center text-center p-12">
-                    <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center mb-6 text-white text-6xl">
-                      👴
-                    </div>
+                    <img src="icon1.png" alt="DeviceDada Guru" className="h-32 w-32 mb-6 rounded-full object-contain border-4 border-primary/20 shadow-lg" />
                     <h3 className="text-2xl font-display font-bold mb-2">DeviceDada Guru</h3>
                     <p className="text-text-muted italic">&quot;Let me help you find your next gadget without the headache.&quot;</p>
                   </div>
@@ -165,26 +143,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-outline/10 py-12 bg-surface">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-white">
-                <Search className="h-4 w-4" />
-              </div>
-              <span className="text-lg font-display font-bold text-primary">DeviceDada</span>
-            </div>
-            <p className="text-sm text-text-muted">
-              © 2026 DeviceDada. All rights reserved. Helping people choose tech wisely.
-            </p>
-            <div className="flex gap-6">
-              <Link href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Privacy Policy</Link>
-              <Link href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Terms of Service</Link>
-              <Link href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Contact</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }

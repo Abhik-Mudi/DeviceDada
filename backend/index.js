@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { getRecommendations } from "./gemini.js";
+import { getRecommendations, compareDevices } from "./gemini.js";
 
 dotenv.config();
 
@@ -34,6 +34,28 @@ app.post("/api/recommend", async (req, res) => {
   } catch (err) {
     console.error("Recommendation error:", err);
     return res.status(502).json({ error: "Failed to generate recommendations." });
+  }
+});
+
+// Takes an array of device names and returns an AI-generated comparison.
+app.post("/api/compare", async (req, res) => {
+  try {
+    const devices = req.body?.devices;
+    if (!Array.isArray(devices) || devices.length < 2) {
+      return res.status(400).json({ error: "Please provide at least two devices in the 'devices' array." });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        error: "Server is not configured: GEMINI_API_KEY is missing.",
+      });
+    }
+
+    const comparisonResult = await compareDevices(devices);
+    return res.json(comparisonResult);
+  } catch (err) {
+    console.error("Comparison error:", err);
+    return res.status(502).json({ error: "Failed to generate comparison." });
   }
 });
 

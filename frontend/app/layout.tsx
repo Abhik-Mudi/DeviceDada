@@ -28,6 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakartaSans.variable} ${beVietnamPro.variable} h-full antialiased`}
     >
+      <meta name="apple-mobile-web-app-title" content="DeviceDada" />
       <body className="min-h-full flex flex-col font-body">{children}</body>
     </html>
   );

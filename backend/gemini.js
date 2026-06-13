@@ -46,6 +46,73 @@ function extractJson(text) {
   }
   return JSON.parse(cleaned.slice(start, end + 1));
 }
+function buildComparePrompt(devices) {
+  return [
+    "You are DeviceDada, a neutral, data-driven gadget advisor.",
+    "Compare the following devices side-by-side in a table-like format for non-technical buyers.",
+    "Explain technical terms in plain language.",
+    "",
+    "CRITICAL: Use the EXACT device names provided below as keys in the 'values' object and for the 'name' field in 'summaries'. Do not shorten or change them.",
+    "",
+    "Devices to compare:",
+    devices.map(d => `"${d}"`).join(", "),
+    "",
+    "Respond with ONLY valid JSON (no markdown fences) matching this schema:",
+...
+
+    JSON.stringify(
+      {
+        comparison: [
+          {
+            feature: "Feature Name (e.g. Display, Battery, Performance)",
+            explanation: "Simple explanation of what this feature means for the user.",
+            values: {
+              "Device Name 1": "Specs/Value for Device 1",
+              "Device Name 2": "Specs/Value for Device 2",
+            },
+            better: "Device Name that wins in this category, or 'neutral'",
+          },
+        ],
+        summaries: [
+          {
+            name: "Device Name",
+            pros: ["3 simple pros"],
+            cons: ["2-3 simple cons"],
+            verdict: "One sentence final judgment.",
+          },
+        ],
+      },
+      null,
+      2
+    ),
+  ].join("\n");
+}
+
+export async function compareDevices(devices) {
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: buildComparePrompt(devices) }] }],
+      generationConfig: { temperature: 0.5, responseMimeType: "application/json" },
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Gemini API error ${response.status}: ${detail}`);
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error("Empty response from Gemini.");
+  }
+
+  return extractJson(text);
+}
 
 export async function getRecommendations(answers) {
   const apiKey = process.env.GEMINI_API_KEY;

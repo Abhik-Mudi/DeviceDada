@@ -124,8 +124,9 @@ export default function RecommendationsPage() {
             {recommendations.map((device, index) => (
               <div 
                 key={device.id || index} 
-                className={`group relative flex flex-col rounded-3xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 border-primary bg-surface shadow-xl
-                `}
+                className={`group relative flex flex-col rounded-3xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 ${
+                  index === 0 ? "border-primary bg-surface shadow-xl" : "border-outline/10 bg-surface/50"
+                }`}
               >
                 {(device.tag || index === 0) && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg z-10 flex items-center gap-2">
@@ -173,7 +174,7 @@ export default function RecommendationsPage() {
                       View Deals
                     </button>
                     <Link 
-                      href="/compare"
+                      href={`/compare?devices=${device.name}`}
                       className="w-full bg-surface border-2 border-outline/10 h-14 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all hover:bg-primary/5 hover:border-primary/20"
                     >
                       Compare with Others
