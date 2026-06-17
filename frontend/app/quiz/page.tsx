@@ -184,7 +184,6 @@ export default function QuizPage() {
   };
 
   const submitQuiz = () => {
-    // Save answers to session storage and redirect
     sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
     router.push("/recommendations");
   };
@@ -193,21 +192,23 @@ export default function QuizPage() {
     switch (step) {
       case 0: // Category
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-display font-bold text-center">What are you buying today?</h2>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-3xl font-display font-bold text-center">What's on your mind?</h2>
             <div className="grid grid-cols-2 gap-4">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => { setAnswers({ ...answers, category: cat.id }); nextStep(); }}
-                  className={`flex flex-col items-center justify-center p-8 rounded-2xl border-2 transition-all ${
+                  className={`group flex flex-col items-center justify-center p-8 rounded-[2rem] border-2 transition-all duration-300 ${
                     answers.category === cat.id 
-                      ? "border-primary bg-primary/5 text-primary" 
-                      : "border-outline/10 bg-surface hover:border-primary/40"
+                      ? "border-primary bg-primary/10 shadow-xl shadow-primary/20 scale-105" 
+                      : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
                   }`}
                 >
-                  <cat.icon className="h-10 w-10 mb-4" />
-                  <span className="font-semibold">{cat.name}</span>
+                  <div className={`mb-4 p-4 rounded-2xl transition-colors ${answers.category === cat.id ? "bg-primary text-white" : "bg-white/5 text-muted-foreground group-hover:text-primary"}`}>
+                    <cat.icon className="h-8 w-8" />
+                  </div>
+                  <span className={`font-bold text-lg ${answers.category === cat.id ? "text-primary" : "text-foreground"}`}>{cat.name}</span>
                 </button>
               ))}
             </div>
@@ -216,22 +217,26 @@ export default function QuizPage() {
       case 1: // Brands
         const availableBrands = (BRANDS as Record<string, string[]>)[answers.category] || [];
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-display font-bold text-center">Which brands do you prefer?</h2>
-            <p className="text-center text-text-muted">You can select multiple brands or skip if you&apos;re open to all.</p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="text-center">
+              <h2 className="text-3xl font-display font-bold mb-2">Favorite Brands?</h2>
+              <p className="text-muted-foreground">Select any brands you love, or just hit continue.</p>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {availableBrands.map((brand: string) => (
                 <button
                   key={brand}
                   onClick={() => toggleBrand(brand)}
-                  className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                  className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-200 ${
                     answers.brands.includes(brand)
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-outline/10 bg-surface hover:border-primary/40"
+                      ? "border-secondary bg-secondary/10 text-secondary"
+                      : "border-white/5 bg-white/5 hover:border-white/20"
                   }`}
                 >
-                  <span className="font-medium">{brand}</span>
-                  {answers.brands.includes(brand) && <Check className="h-4 w-4" />}
+                  <span className="font-bold">{brand}</span>
+                  <div className={`h-5 w-5 rounded-md flex items-center justify-center transition-colors ${answers.brands.includes(brand) ? "bg-secondary" : "bg-white/5"}`}>
+                    {answers.brands.includes(brand) && <Check className="h-3 w-3 text-white" />}
+                  </div>
                 </button>
               ))}
             </div>
@@ -239,22 +244,22 @@ export default function QuizPage() {
         );
       case 2: // Budget
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-display font-bold text-center">What is your budget?</h2>
-            <div className="space-y-3">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-3xl font-display font-bold text-center">What's the budget?</h2>
+            <div className="grid gap-4">
               {BUDGETS.map((b) => (
                 <button
                   key={b}
                   onClick={() => { setAnswers({ ...answers, budget: b }); nextStep(); }}
-                  className={`w-full flex items-center justify-between p-5 rounded-xl border-2 transition-all ${
+                  className={`w-full flex items-center justify-between p-6 rounded-[1.5rem] border-2 transition-all duration-200 ${
                     answers.budget === b
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-outline/10 bg-surface hover:border-primary/40"
+                      ? "border-accent bg-accent/10 text-accent scale-[1.02]"
+                      : "border-white/5 bg-white/5 hover:border-white/20"
                   }`}
                 >
-                  <span className="font-semibold text-lg">{b}</span>
-                  <div className={`h-6 w-6 rounded-full border-2 flex items-center justify-center ${answers.budget === b ? "border-primary bg-primary" : "border-outline/20"}`}>
-                    {answers.budget === b && <div className="h-2 w-2 rounded-full bg-white" />}
+                  <span className="font-bold text-xl">{b}</span>
+                  <div className={`h-8 w-8 rounded-full border-2 flex items-center justify-center transition-all ${answers.budget === b ? "border-accent bg-accent" : "border-white/20"}`}>
+                    {answers.budget === b && <div className="h-3 w-3 rounded-full bg-white" />}
                   </div>
                 </button>
               ))}
@@ -263,25 +268,25 @@ export default function QuizPage() {
         );
       case 3: // Purpose
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-display font-bold text-center">What is the main purpose?</h2>
-            <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-3xl font-display font-bold text-center">Primary Mission?</h2>
+            <div className="grid gap-4">
               {PURPOSES.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => { setAnswers({ ...answers, purpose: p.id }); nextStep(); }}
-                  className={`flex items-start gap-5 p-6 rounded-2xl border-2 text-left transition-all ${
+                  className={`group flex items-center gap-6 p-6 rounded-[2rem] border-2 text-left transition-all duration-300 ${
                     answers.purpose === p.id
-                      ? "border-primary bg-primary/5"
-                      : "border-outline/10 bg-surface hover:border-primary/40"
+                      ? "border-primary bg-primary/10 shadow-xl shadow-primary/20 scale-[1.02]"
+                      : "border-white/5 bg-white/5 hover:border-white/20"
                   }`}
                 >
-                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${answers.purpose === p.id ? "bg-primary text-white" : "bg-primary/5 text-primary"}`}>
-                    <p.icon className="h-6 w-6" />
+                  <div className={`h-16 w-16 rounded-2xl flex items-center justify-center shrink-0 transition-all ${answers.purpose === p.id ? "bg-primary text-white scale-110" : "bg-white/10 text-muted-foreground group-hover:text-primary"}`}>
+                    <p.icon className="h-8 w-8" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg">{p.name}</h4>
-                    <p className="text-text-muted text-sm">{p.description}</p>
+                    <h4 className={`font-bold text-xl mb-1 ${answers.purpose === p.id ? "text-primary" : "text-foreground"}`}>{p.name}</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{p.description}</p>
                   </div>
                 </button>
               ))}
@@ -290,21 +295,23 @@ export default function QuizPage() {
         );
       case 4: // User Type
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-display font-bold text-center">Who are you?</h2>
-            <div className="grid grid-cols-1 gap-3">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-3xl font-display font-bold text-center">Who are you?</h2>
+            <div className="grid gap-3">
               {USER_TYPES.map((u) => (
                 <button
                   key={u}
                   onClick={() => { setAnswers({ ...answers, userType: u }); nextStep(); }}
-                  className={`flex items-center justify-between p-5 rounded-xl border-2 transition-all ${
+                  className={`flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-200 ${
                     answers.userType === u
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-outline/10 bg-surface hover:border-primary/40"
+                      ? "border-secondary bg-secondary/10 text-secondary scale-[1.02]"
+                      : "border-white/5 bg-white/5 hover:border-white/20"
                   }`}
                 >
-                  <span className="font-semibold text-lg">{u}</span>
-                  {answers.userType === u && <Check className="h-5 w-5" />}
+                  <span className="font-bold text-lg">{u}</span>
+                  <div className={`h-6 w-6 rounded-full flex items-center justify-center transition-colors ${answers.userType === u ? "bg-secondary" : "bg-white/10"}`}>
+                    {answers.userType === u && <Check className="h-4 w-4 text-white" />}
+                  </div>
                 </button>
               ))}
             </div>
@@ -313,32 +320,33 @@ export default function QuizPage() {
       case 5: // Technical
         const categoryQuestions = TECH_QUESTIONS[answers.category] || [];
         return (
-          <div className="space-y-10">
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center">
-              <h2 className="text-2xl font-display font-bold">A few technical preferences</h2>
-              <p className="text-text-muted mt-2">Don&apos;t worry, DeviceDada will explain everything!</p>
+              <h2 className="text-3xl font-display font-bold mb-2">Fine-tuning</h2>
+              <p className="text-muted-foreground">Let's nail down those specific needs.</p>
             </div>
-            <div className="space-y-8">
+            <div className="space-y-12">
               {categoryQuestions.map((q) => (
-                <div key={q.id} className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <h4 className="font-bold text-lg leading-tight">{q.question}</h4>
-                  </div>
-                  <div className="bg-secondary/5 rounded-xl p-4 flex gap-3 border border-secondary/10">
-                    <Info className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
-                    <p className="text-sm text-secondary/80 leading-relaxed italic">
+                <div key={q.id} className="space-y-6">
+                  <h4 className="font-bold text-xl leading-tight border-l-4 border-primary pl-4">{q.question}</h4>
+                  <div className="glass-card rounded-[1.5rem] p-6 flex gap-4">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Info className="h-5 w-5 text-primary" />
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">
+                      <span className="text-foreground font-bold not-italic block mb-1">Dada explains:</span>
                       {q.explanation}
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {q.options.map((opt: string) => (
                       <button
                         key={opt}
                         onClick={() => setAnswers({ ...answers, tech: { ...answers.tech, [q.id]: opt } })}
-                        className={`px-6 py-2 rounded-full border-2 transition-all font-medium ${
+                        className={`px-8 py-3 rounded-full border-2 transition-all font-bold ${
                           answers.tech[q.id] === opt
-                            ? "border-primary bg-primary text-white"
-                            : "border-outline/10 bg-surface hover:border-primary/20"
+                            ? "border-primary bg-primary text-white shadow-lg shadow-primary/30 scale-105"
+                            : "border-white/5 bg-white/5 hover:border-white/20"
                         }`}
                       >
                         {opt}
@@ -358,49 +366,54 @@ export default function QuizPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background font-body text-foreground">
       {/* Quiz Header */}
-      <header className="border-b border-outline/10 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-          <button onClick={() => router.back()} className="flex items-center gap-2 text-text-muted hover:text-primary transition-colors">
-            <ChevronLeft className="h-5 w-5" />
-            <span className="font-medium">Back</span>
+      <header className="glass border-b border-white/5 sticky top-0 z-50">
+        <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+          <button onClick={() => router.back()} className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors group">
+            <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+            <span className="font-bold">Exit</span>
           </button>
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-primary text-white">
-              <Cpu className="h-4 w-4" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white shadow-lg shadow-primary/20">
+              <Cpu className="h-5 w-5" />
             </div>
-            <span className="text-lg font-display font-bold text-primary">DeviceDada Quiz</span>
+            <span className="text-xl font-display font-bold">Quiz</span>
           </div>
-          <div className="w-16" /> {/* Spacer */}
+          <div className="w-16" />
         </div>
       </header>
 
-      <main className="flex-1 py-12">
+      <main className="flex-1 py-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-mesh -z-10 opacity-30" />
+        
         <div className="container mx-auto max-w-2xl px-4">
-          {/* Progress Bar */}
-          <div className="mb-12">
-            <div className="flex justify-between text-xs font-bold text-primary uppercase tracking-widest mb-2">
-              <span>Step {step + 1} of {STEPS.length}</span>
-              <span>{Math.round(((step + 1) / STEPS.length) * 100)}% Complete</span>
+          {/* Progress Section */}
+          <div className="mb-16">
+            <div className="flex justify-between items-end mb-4">
+              <div>
+                <span className="text-primary font-bold block text-sm uppercase tracking-widest mb-1">Progress</span>
+                <h3 className="text-2xl font-display font-bold">Step {step + 1} of {STEPS.length}</h3>
+              </div>
+              <span className="text-2xl font-display font-bold text-white/40">{Math.round(((step + 1) / STEPS.length) * 100)}%</span>
             </div>
-            <div className="h-2 w-full rounded-full bg-outline/10 overflow-hidden">
+            <div className="h-3 w-full rounded-full bg-white/5 overflow-hidden p-1 border border-white/5">
               <div 
-                className="h-full bg-primary transition-all duration-500 ease-out" 
+                className="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-accent transition-all duration-700 ease-out shadow-[0_0_15px_rgba(59,130,246,0.5)]" 
                 style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
               />
             </div>
           </div>
 
           {/* Current Step Content */}
-          <div className="min-h-[400px]">
+          <div className="min-h-[450px]">
             {renderStep()}
           </div>
 
           {/* Navigation Buttons */}
-          <div className="mt-12 flex items-center justify-between border-t border-outline/10 pt-8">
+          <div className="mt-16 flex items-center justify-between pt-10 border-t border-white/5">
             <button
               onClick={prevStep}
               disabled={step === 0}
-              className={`flex items-center gap-2 font-bold transition-colors ${step === 0 ? "text-text-muted opacity-50 cursor-not-allowed" : "text-primary hover:text-primary/80"}`}
+              className={`flex items-center gap-2 font-bold px-6 py-3 rounded-2xl transition-all ${step === 0 ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
             >
               <ChevronLeft className="h-5 w-5" />
               Previous
@@ -413,10 +426,13 @@ export default function QuizPage() {
                 (step === 3 && !answers.purpose) ||
                 (step === 4 && !answers.userType)
               }
-              className={`flex items-center gap-2 bg-primary px-8 py-4 rounded-full text-white font-bold shadow-lg transition-all hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 hover:scale-105`}
+              className={`relative flex items-center gap-2 bg-primary px-10 py-4 rounded-2xl text-white font-bold shadow-2xl shadow-primary/30 transition-all hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 hover:scale-105 active:scale-95 group overflow-hidden`}
             >
-              {step === STEPS.length - 1 ? "Show Recommendations" : "Continue"}
-              <ChevronRight className="ml-2 h-5 w-5" />
+              <span className="relative z-10">
+                {step === STEPS.length - 1 ? "Get Results" : "Continue"}
+              </span>
+              <ChevronRight className={`relative z-10 ml-2 h-5 w-5 transition-transform ${step === STEPS.length - 1 ? "group-hover:rotate-12" : "group-hover:translate-x-1"}`} />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
             </button>
           </div>
         </div>
