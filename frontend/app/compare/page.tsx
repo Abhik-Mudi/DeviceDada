@@ -48,7 +48,7 @@ function CompareContent() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:4000/api/compare", {
+      const response = await fetch("/api/compare", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ devices: targetDevices }),
