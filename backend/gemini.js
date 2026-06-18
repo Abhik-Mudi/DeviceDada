@@ -1,9 +1,10 @@
-// Thin wrapper around the Gemini REST API.
-// The API key is read from the GEMINI_API_KEY environment variable and never
-// leaves the server. Do NOT hardcode the key here or expose it to the client.
+// Thin wrapper around the GitHub Models API (OpenAI compatible).
+// The API key is read from the GEMINI_API_KEY environment variable.
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+// Note: Ensure your environment variable maps to a GitHub-hosted model, 
+// e.g., "google/gemini-2.5-flash" or "google/gemini-2.5-pro"
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gpt-4o-mini";
+const GITHUB_MODELS_URL = "https://models.github.ai/inference/chat/completions";
 
 function buildPrompt(answers) {
   return [
@@ -37,7 +38,6 @@ function buildPrompt(answers) {
 }
 
 function extractJson(text) {
-  // Strip optional markdown fences and parse the first JSON object found.
   const cleaned = text.replace(/```json/gi, "").replace(/```/g, "").trim();
   const start = cleaned.indexOf("{");
   const end = cleaned.lastIndexOf("}");
@@ -46,6 +46,7 @@ function extractJson(text) {
   }
   return JSON.parse(cleaned.slice(start, end + 1));
 }
+
 function buildComparePrompt(devices) {
   return [
     "You are DeviceDada, a neutral, data-driven gadget advisor.",
@@ -58,8 +59,6 @@ function buildComparePrompt(devices) {
     devices.map(d => `"${d}"`).join(", "),
     "",
     "Respond with ONLY valid JSON (no markdown fences) matching this schema:",
-...
-
     JSON.stringify(
       {
         comparison: [
@@ -91,24 +90,31 @@ function buildComparePrompt(devices) {
 export async function compareDevices(devices) {
   const apiKey = process.env.GEMINI_API_KEY;
 
-  const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+  const response = await fetch(GITHUB_MODELS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`, // GitHub PAT goes here
+    },
     body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: buildComparePrompt(devices) }] }],
-      generationConfig: { temperature: 0.5, responseMimeType: "application/json" },
+      model: GEMINI_MODEL,
+      messages: [{ role: "user", content: buildComparePrompt(devices) }],
+      temperature: 0.5,
+      // Forces the model to return a JSON object (supported by GitHub Models)
+      response_format: { type: "json_object" } 
     }),
   });
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`Gemini API error ${response.status}: ${detail}`);
+    throw new Error(`GitHub Models API error ${response.status}: ${detail}`);
   }
 
   const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  // OpenAI schema extraction
+  const text = data?.choices?.[0]?.message?.content; 
   if (!text) {
-    throw new Error("Empty response from Gemini.");
+    throw new Error("Empty response from GitHub Models API.");
   }
 
   return extractJson(text);
@@ -117,24 +123,29 @@ export async function compareDevices(devices) {
 export async function getRecommendations(answers) {
   const apiKey = process.env.GEMINI_API_KEY;
 
-  const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+  const response = await fetch(GITHUB_MODELS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
     body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: buildPrompt(answers) }] }],
-      generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
+      model: GEMINI_MODEL,
+      messages: [{ role: "user", content: buildPrompt(answers) }],
+      temperature: 0.7,
+      response_format: { type: "json_object" }
     }),
   });
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`Gemini API error ${response.status}: ${detail}`);
+    throw new Error(`GitHub Models API error ${response.status}: ${detail}`);
   }
 
   const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = data?.choices?.[0]?.message?.content;
   if (!text) {
-    throw new Error("Empty response from Gemini.");
+    throw new Error("Empty response from GitHub Models API.");
   }
 
   const parsed = extractJson(text);
