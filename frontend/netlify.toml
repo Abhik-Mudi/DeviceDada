@@ -1,5 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [[redirects]]
   from = "/api/*"
-  to = ":env(NEXT_PUBLIC_BACKEND_URL)/api/:splat"
+  to = "https://devicedada.onrender.com/api/:splat"
   status = 200
   force = true
